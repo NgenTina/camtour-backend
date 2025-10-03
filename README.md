@@ -1,17 +1,21 @@
-# CamTour Backend
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-## Database Setup
-1. Ensure you have Docker and Docker Compose installed on your machine.
-2. Clone the repository and navigate to the project directory.
-3. Create a `.env` file in the root directory and configure your database connection settings.
-4. Run the following command to start the PostgreSQL and Adminer containers:
-   ```
-   docker-compose up -d
-   ```
-5. Access Adminer at `http://localhost:8080` and log in with the following credentials:
-  - Adminer: http://localhost:8080
-  - System: PostgreSQL
-  - Server: postgres
-  - Username: postgres
-  - Password: password
-  - Database: chatbot_db
+ uv pip install pydantic[email] --link-mode=copy
+
+ Start the Database
+Make sure your ephemeral Postgres database is running. You can use Docker Compose:
+
+docker-compose up ephemeral_db
+
+Seed the Database (Optional)
+You can seed the database with sample data:
+
+python seed_data.py
+
+Or, use the /seed endpoint if running the FastAPI server.
+
+Run the FastAPI Server
+Start your backend server:
+
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+

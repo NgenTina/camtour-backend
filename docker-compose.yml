@@ -1,31 +1,29 @@
-version: '3.8'
 services:
-  postgres:
-    image: postgres:13
-    container_name: chatbot_postgres
-    environment:
-      POSTGRES_DB: chatbot_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      default:
-        aliases:
-          - db
 
-  adminer:
-    image: adminer
-    container_name: adminer
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: camtour_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "8080:8080"
-    networks:
-      default:
-        aliases:
-          - adminer
+      - "8080:80"
+    depends_on:
+      - ephemeral_db
+
+  ephemeral_db:
+    image: postgres:15
+    container_name: camtour_ephemeral_postgres
+    environment:
+      POSTGRES_USER: ephemeral_user
+      POSTGRES_PASSWORD: ephemeral_pass
+      POSTGRES_DB: ephemeral_db
+    ports:
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
 
 volumes:
   postgres_data:
+    driver: local
