@@ -7,6 +7,9 @@ from alembic import context
 from app.database.database import Base
 from app.core.config import settings
 
+import os
+os.environ["ALEMBIC_MIGRATION"] = "1"
+
 # this is the Alembic Config object
 config = context.config
 

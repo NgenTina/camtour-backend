@@ -4,7 +4,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
     # Database settings
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/tourism_chatbot"
+    database_url: str = "postgresql+asyncpg://ephemeral_user:ephemeral_pass@localhost:5433/ephemeral_db"
     ephemeral_database_url: str = "postgresql+asyncpg://ephemeral_user:ephemeral_pass@localhost:5433/ephemeral_db"
 
     # Gemini AI settings

@@ -24,7 +24,10 @@ class EntityUpdate(BaseModel):
 
 
 class EntityResponse(EntityBase):
-    message: Optional["MessageResponse"] = None
+    id: int
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    # Do NOT include message: MessageResponse here to avoid recursion
 
     class Config:
         from_attributes = True

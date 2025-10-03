@@ -1,3 +1,4 @@
+
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional, List, TYPE_CHECKING
@@ -23,11 +24,18 @@ class UserUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 
+class UserBasic(UserBase):
+    id: int
+    is_active: Optional[bool] = True
+
+
 class UserResponse(UserBase):
+    id: int
+    is_active: Optional[bool] = True
+    # ConversationResponse does NOT cause recursion
     conversations: Optional[List["ConversationResponse"]] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
-
-
-# Resolve forward references

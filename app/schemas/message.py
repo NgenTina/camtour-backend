@@ -24,6 +24,8 @@ class MessageUpdate(BaseModel):
 class MessageResponse(MessageBase):
     id: int
     created_at: datetime
+    updated_at: Optional[datetime] = None
+    # EntityResponse does NOT reference MessageResponse
     entities: Optional[List["EntityResponse"]] = None
 
     class Config:

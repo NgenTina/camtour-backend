@@ -24,6 +24,19 @@ services:
     tmpfs:
       - /var/lib/postgresql/data
 
+  # persistent_db:
+  #   image: postgres:15
+  #   container_name: camtour_persistent_postgres
+  #   environment:
+  #     POSTGRES_USER: persistent_user
+  #     POSTGRES_PASSWORD: persistent_pass
+  #     POSTGRES_DB: persistent_db
+  #   ports:
+  #     - "5434:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+
+
 volumes:
   postgres_data:
     driver: local
