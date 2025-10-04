@@ -25,24 +25,26 @@ app.include_router(conversations.router, prefix=settings.api_v1_prefix)
 app.include_router(messages.router, prefix=settings.api_v1_prefix)
 app.include_router(entities.router, prefix=settings.api_v1_prefix)
 
-@app.get("/")
+
+@app.get(f"{settings.api_v1_prefix}/")
 async def root():
     return {
         "message": "Welcome to Tourism Chatbot Backend API",
         "version": "1.0.0",
         "endpoints": [
             f"{settings.api_v1_prefix}/users",
-            f"{settings.api_v1_prefix}/conversations", 
+            f"{settings.api_v1_prefix}/conversations",
             f"{settings.api_v1_prefix}/messages",
             f"{settings.api_v1_prefix}/entities"
         ]
     }
 
-@app.get("/health")
+@app.get(f"{settings.api_v1_prefix}/health")
 async def health_check():
     return {"status": "healthy", "service": "tourism-chatbot-backend"}
 
-@app.get("/seed")
+
+@app.get(f"{settings.api_v1_prefix}/seed")
 async def seed_database():
     """Development endpoint to reseed the database"""
     try:
@@ -50,7 +52,8 @@ async def seed_database():
         await seed_data()
         return {"message": "Database reseeded successfully"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error seeding database: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error seeding database: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

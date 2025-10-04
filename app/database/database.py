@@ -41,8 +41,6 @@ class Base(DeclarativeBase):
     pass
 
 # Dependency to get database session
-
-
 async def get_db():
     async with AsyncSessionLocal() as session:
         try:
