@@ -20,7 +20,8 @@ class User(Base):
 
     # Relationships
     from .conversation import Conversation
-    conversations = relationship("Conversation", back_populates="user")
+    conversations = relationship(
+        "Conversation", back_populates="user", lazy="selectin")
 
     def __repr__(self):
         return f"<User(id={self.id}, username='{self.username}', email='{self.email}')>"

@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional, List, TYPE_CHECKING
@@ -31,11 +30,13 @@ class UserBasic(UserBase):
 
 class UserResponse(UserBase):
     id: int
+    username: str
+    email: str
     is_active: Optional[bool] = True
-    # ConversationResponse does NOT cause recursion
     conversations: Optional[List["ConversationResponse"]] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
     class Config:
+        orm_mode = True
         from_attributes = True

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 from app.database.database import get_db
 from app.models import User, Conversation, Message
 from app.schemas import UserCreate, UserUpdate, UserResponse, UserBasic
@@ -32,11 +32,19 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     return db_user
 
 
-@router.get("/{user_id}", response_model=UserBasic)
+@router.get("/{user_id}", response_model=UserResponse)
 async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
-    """Get user by ID (basic info only)"""
+    """Get user by ID with full details"""
     result = await db.execute(
-        select(User).where(User.id == user_id)
+        select(User)
+        .options(
+            selectinload(User.conversations).options(
+                selectinload(Conversation.messages).options(
+                    selectinload(Message.entities)
+                )
+            )
+        )
+        .where(User.id == user_id)
     )
     user = result.scalars().first()
     if not user:
@@ -49,23 +57,42 @@ async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.put("/{user_id}", response_model=UserResponse)
 async def update_user(user_id: int, user_update: UserUpdate, db: AsyncSession = Depends(get_db)):
-    """Update user by ID"""
-    result = await db.execute(select(User).where(User.id == user_id))
-    db_user = result.scalars().first()
-
-    if not db_user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+    # Fetch the user with conversations eagerly loaded
+    result = await db.execute(
+        select(User)
+        .options(
+            selectinload(User.conversations).selectinload(
+                Conversation.messages)
         )
+        .where(User.id == user_id)
+    )
+    user = result.scalars().first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
 
     # Update user fields
-    for field, value in user_update.model_dump(exclude_unset=True).items():
-        setattr(db_user, field, value)
+    for key, value in user_update.model_dump(exclude_unset=True).items():
+        setattr(user, key, value)
 
     await db.commit()
-    await db.refresh(db_user)
-    return db_user
+    await db.refresh(user)
+
+    # Re-fetch with all relationships loaded for serialization
+    result = await db.execute(
+        select(User)
+        .options(
+            selectinload(User.conversations).options(
+                selectinload(Conversation.messages).options(
+                    selectinload(Message.entities)
+                )
+            )
+        )
+        .where(User.id == user_id)
+    )
+    user = result.scalars().first()
+
+    return UserResponse.model_validate(user)
 
 
 @router.delete("/{user_id}")
