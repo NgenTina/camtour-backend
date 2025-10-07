@@ -6,6 +6,7 @@ from sqlalchemy import text
 from app.models import User, Conversation, Message, Entity
 from app.database.database import Base
 from app.core.config import settings
+from app.core.auth import get_password_hash
 
 # Update the database URL to use the ephemeral database credentials
 settings.database_url = "postgresql+asyncpg://ephemeral_user:ephemeral_pass@localhost:5433/ephemeral_db"
@@ -58,22 +59,30 @@ async def seed_data():
             {
                 "username": "tourist_john",
                 "email": "john@example.com",
-                "full_name": "John Doe"
+                "full_name": "John Doe",
+                "password": "password123"
             },
             {
                 "username": "traveler_jane",
                 "email": "jane@example.com",
-                "full_name": "Jane Smith"
+                "full_name": "Jane Smith",
+                "password": "password123"
             },
             {
                 "username": "adventure_mike",
                 "email": "mike@example.com",
-                "full_name": "Mike Johnson"
+                "full_name": "Mike Johnson",
+                "password": "password123"
             }
         ]
 
         users = []
         for user_data in users_data:
+            # Hash the password and create user data without plain password
+            password = user_data.pop("password")
+            hashed_password = get_password_hash(password)
+            user_data["hashed_password"] = hashed_password
+
             user = User(**user_data)
             session.add(user)
             users.append(user)

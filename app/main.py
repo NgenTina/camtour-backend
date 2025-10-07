@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api import users, conversations, messages, entities
+from app.api import users, conversations, messages, entities, auth
 
 app = FastAPI(
     title=settings.app_name,
@@ -24,6 +24,7 @@ app.include_router(users.router, prefix=settings.api_v1_prefix)
 app.include_router(conversations.router, prefix=settings.api_v1_prefix)
 app.include_router(messages.router, prefix=settings.api_v1_prefix)
 app.include_router(entities.router, prefix=settings.api_v1_prefix)
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 
 @app.get(f"{settings.api_v1_prefix}/")
@@ -38,6 +39,7 @@ async def root():
             f"{settings.api_v1_prefix}/entities"
         ]
     }
+
 
 @app.get(f"{settings.api_v1_prefix}/health")
 async def health_check():

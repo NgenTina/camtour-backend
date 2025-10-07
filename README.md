@@ -41,4 +41,15 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ---
 ### Tasks
 
+- [x] Create a Dockerfile for the FastAPI application.
+- [x] Defined chatbot models and endpoints.
+- [ ] Implement core architecture and features of the application.
+- [x] Create a persistent and ephemeral (temporary) database service in Docker Compose for production use.
+- [ ] Ensure the FastAPI application connects to the persistent database in production.
+
+### API Test Authentication
+
+The authentication system in our project uses JWT (JSON Web Tokens) for securing API endpoints. Here's a high-level overview of how it works:
+
+
 Build with Love by FAKER and NaQT

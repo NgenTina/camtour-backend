@@ -5,6 +5,7 @@ from sqlalchemy.orm import selectinload, joinedload
 from app.database.database import get_db
 from app.models import User, Conversation, Message
 from app.schemas import UserCreate, UserUpdate, UserResponse, UserBasic
+from app.core.auth import get_password_hash, get_current_user
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -25,7 +26,13 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
             detail="Username or email already registered"
         )
 
-    db_user = User(**user.model_dump())
+    # Hash the password
+    hashed_password = get_password_hash(user.password)
+    user_data = user.model_dump()
+    user_data.pop("password")  # Remove plain password
+    user_data["hashed_password"] = hashed_password
+
+    db_user = User(**user_data)
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
